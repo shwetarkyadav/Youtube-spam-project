@@ -1,11 +1,16 @@
 from flask import Flask, render_template, url_for, request
 import pandas as pd
 import numpy as np
+import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
+import joblib
 
 app = Flask(__name__)
+file=open('YtbSpam_model.pkl','rb')
+clf=pickle.load(file)
+file.close()
 
 @app.route('/')
 
@@ -24,6 +29,10 @@ def predict():
     clf=MultinomialNB()
     clf.fit(X_train,y_train)
     clf.score(X_test, y_test)
+
+    file=open('YtbSpam_model.pkl','wb')
+    pickle.dump(clf,file)
+    file.close()
 
     if request.method =='POST':
         comment = request.form['comment']
